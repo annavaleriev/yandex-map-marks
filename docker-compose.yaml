@@ -1,17 +1,41 @@
 services:
-  app_shortener:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app_short_url
+      - .:/app_yandex_marks
+    env_file:
+      - .env
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
     networks:
       - app_network
+
+  db:
+    image: postgres
     env_file:
       - .env
     ports:
-      - "8000:8000"
+      - "5433:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - app_network
+
+
+volumes:
+  postgres:
 
 networks:
   app_network:
-
