@@ -1,0 +1,17 @@
+services:
+  app_shortener:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app_short_url
+    networks:
+      - app_network
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+
+networks:
+  app_network:
+
